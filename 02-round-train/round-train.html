@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Round Train</title>
+</head>
+<body>
+<script>
+    'use strict';
+    function VagonFabric () {
+
+        function Vagon (prev) {
+            this.previous = prev || null;
+            this.next = null;
+            this.isLightOn = Math.random() > 0.5;
+
+            if (prev && !prev.next) {
+                prev.next = this;
+            }
+        }
+        return Vagon;
+    }
+
+    function generateTrain(size) {
+        var res = [],
+                Vagon = VagonFabric(),
+                first,
+                last;
+
+        for (var i = 0; i < size; i++) {
+            res.push(new Vagon(res[i-1]));
+        }
+
+        first = res[0];
+        last = res[res.length-1];
+
+        first.previous = last;
+        last.next = first;
+
+        return res;
+    }
+
+    var train = generateTrain(7);
+
+    console.table(train);
+
+    function findAnonimusVagon (train) {
+        var len = train.length;
+        var num = Math.round(Math.random() * (len-1));
+        return train[num];
+    }
+
+    var vagon = findAnonimusVagon (train);
+
+    var arr = [];
+    function countTrainCarriages (vagon) {
+        if (!arr.length) {
+            vagon.isLightOn= true;
+            arr.push(vagon);
+            return countTrainCarriages(vagon.next);
+        }
+
+        if (!vagon.isLightOn) {
+            arr.push(vagon);
+            return countTrainCarriages(vagon.next);
+        } else {
+            vagon.isLightOn = false;
+            if (arr[0]['isLightOn']) {
+                arr.push(vagon);
+                return countTrainCarriages(vagon.next);
+            } else {
+                return arr.length;
+            }
+        }
+    }
+    var count = countTrainCarriages (vagon);
+    console.log('Count Train Carriages:', count);
+    console.table(train);
+</script>
+</body>
+</html>
